@@ -9,24 +9,57 @@ import java.util.Locale;
 
 public class StopwatchActivity extends Activity {
 
+    //количество отсчитанных секунд
     private int seconds = 0;
+    //флаг отсчета
     private boolean running;
+    //флаг отсчета до приостоновки активности
+    private boolean wasRunning;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stopwatch);
+        if(savedInstanceState!=null){
+            seconds = savedInstanceState.getInt("seconds");
+            running = savedInstanceState.getBoolean("running");
+            wasRunning = savedInstanceState.getBoolean("wasRunning");
+        }
         runTimer();
     }
 
+    //сохраняет состояние перед приостановкой
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        savedInstanceState.putInt("seconds", seconds);
+        savedInstanceState.putBoolean("running", running);
+        savedInstanceState.putBoolean("wasRunning", wasRunning);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        wasRunning = running;
+        running = false;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (wasRunning) running = true;
+    }
+
+    //запускает секундомер при щелчке на кнопку start
     public void onClickStart(View view){
         running = true;
     }
 
+    //останавливает секундомер при щелчке на кнопку stop
     public void onClickStop(View view){
         running = false;
     }
 
+    //обнуляет секундомер при щелчке на кнопку reset
     public void onClickReset(View view){
         running = false;
         seconds = 0;
@@ -49,4 +82,5 @@ public class StopwatchActivity extends Activity {
             }
         });
     }
+
 }
